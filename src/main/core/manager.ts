@@ -594,11 +594,12 @@ async function setDNS(dns: string, mode: 'none' | 'exec' | 'service'): Promise<v
 export async function setPublicDNS(): Promise<void> {
   if (process.platform !== 'darwin') return
   if (net.isOnline()) {
-    const { originDNS, autoSetDNSMode = 'none' } = await getAppConfig()
+    const { originDNS, autoSetDNSMode = 'exec' } = await getAppConfig()
+    if (autoSetDNSMode === 'none') return
     if (!originDNS) {
       await getOriginDNS()
-      await setDNS('1.1.1.1', autoSetDNSMode)
     }
+    await setDNS('1.1.1.1', autoSetDNSMode)
   } else {
     if (setPublicDNSTimer) clearTimeout(setPublicDNSTimer)
     setPublicDNSTimer = setTimeout(() => setPublicDNS(), 5000)
@@ -608,7 +609,7 @@ export async function setPublicDNS(): Promise<void> {
 export async function recoverDNS(): Promise<void> {
   if (process.platform !== 'darwin') return
   if (net.isOnline()) {
-    const { originDNS, autoSetDNSMode = 'none' } = await getAppConfig()
+    const { originDNS, autoSetDNSMode = 'exec' } = await getAppConfig()
     if (originDNS) {
       await setDNS(originDNS, autoSetDNSMode)
       await patchAppConfig({ originDNS: undefined })
