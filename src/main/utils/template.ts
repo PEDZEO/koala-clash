@@ -1,5 +1,6 @@
 export const defaultConfig: AppConfig = {
   core: 'mihomo',
+  autoSetDNSMode: 'exec',
   silentStart: false,
   appTheme: 'system',
   useWindowFrame: false,
